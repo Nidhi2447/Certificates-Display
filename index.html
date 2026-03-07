@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Certificates</title>
+  <style>
+    :root {
+      --bg: #0d0f1a;
+      --surface: #141728;
+      --surface2: #1c2038;
+      --border: rgba(255,255,255,0.07);
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --accent3: #ff6584;
+      --text: #e2e8f4;
+      --text-muted: #7a85a3;
+      --radius: 16px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── HEADER ─────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #1a1d3a 0%, #0d0f1a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .header-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 20px rgba(108,99,255,0.4);
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #fff 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .header-stats {
+      margin-left: auto;
+      display: flex;
+      gap: 24px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* ─── LAYOUT ─────────────────────────────────── */
+    .layout {
+      display: flex;
+      flex: 1;
+    }
+
+    /* ─── SIDEBAR ────────────────────────────────── */
+    aside {
+      width: 280px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      position: sticky;
+      top: 101px;
+      height: calc(100vh - 101px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent) transparent;
+    }
+
+    aside h2 {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      padding-left: 8px;
+    }
+
+    .tree { list-style: none; }
+
+    .tree-category {
+      margin-bottom: 4px;
+    }
+
+    .tree-cat-btn {
+      width: 100%;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-align: left;
+    }
+
+    .tree-cat-btn:hover { background: var(--surface2); }
+    .tree-cat-btn.active { background: rgba(108,99,255,0.15); color: var(--accent2); }
+
+    .tree-cat-btn .caret {
+      margin-left: auto;
+      font-size: 0.7rem;
+      transition: transform 0.2s;
+      color: var(--text-muted);
+    }
+
+    .tree-cat-btn.open .caret { transform: rotate(90deg); }
+
+    .tree-sub {
+      list-style: none;
+      padding-left: 20px;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.3s ease;
+    }
+
+    .tree-sub.open { max-height: 600px; }
+
+    .tree-sub-item {
+      margin: 2px 0;
+    }
+
+    .tree-sub-btn {
+      width: 100%;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .tree-sub-btn:hover { background: var(--surface2); color: var(--text); }
+    .tree-sub-btn.active { background: rgba(0,212,170,0.12); color: var(--accent2); }
+
+    .badge {
+      margin-left: auto;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      padding: 1px 7px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    /* ─── MAIN ───────────────────────────────────── */
+    main {
+      flex: 1;
+      padding: 36px 40px;
+      overflow-y: auto;
+    }
+
+    /* ─── SECTION ────────────────────────────────── */
+    .section {
+      margin-bottom: 52px;
+      scroll-margin-top: 120px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .section-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .section-count {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .section-divider {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      margin-left: 8px;
+    }
+
+    /* ─── SUBSECTION ──────────────────────────────── */
+    .subsection {
+      margin-bottom: 36px;
+      scroll-margin-top: 120px;
+    }
+
+    .subsection-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .subsection-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .subsection-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .subsection-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: var(--surface2);
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    /* ─── CARDS GRID ──────────────────────────────── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      position: relative;
+      group: true;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: rgba(108,99,255,0.4);
+    }
+
+    .card-thumb {
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-thumb-icon {
+      font-size: 52px;
+      opacity: 0.85;
+      z-index: 1;
+      position: relative;
+    }
+
+    .card-thumb-bg {
+      position: absolute;
+      inset: 0;
+      opacity: 0.07;
+      font-size: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-view-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(108,99,255,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      gap: 8px;
+    }
+
+    .card:hover .card-view-overlay { opacity: 1; }
+
+    .card-body {
+      padding: 14px 16px;
+    }
+
+    .card-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+      margin-bottom: 6px;
+      word-break: break-word;
+    }
+
+    .card-meta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-tag {
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── MODAL ───────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      backdrop-filter: blur(6px);
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 900px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+      transform: scale(0.95);
+      transition: transform 0.25s;
+    }
+
+    .modal-overlay.open .modal {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: nowrap;
+    }
+
+    .modal-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    /* title block takes remaining space, subtitle sits below title */
+    .modal-title-block {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .modal-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .modal-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      order: 1;
+    }
+
+    .modal-close {
+      order: 2;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .modal-close:hover { background: rgba(255,101,132,0.2); color: var(--accent3); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9f6aff);
+      border-color: transparent;
+      color: #fff;
+    }
+
+    .btn-primary:hover { opacity: 0.85; }
+
+    .btn-ghost {
+      background: var(--surface2);
+      color: var(--text-muted);
+    }
+
+    .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
+
+    .modal-body {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .modal-body iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .modal-body .pdf-fallback {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 16px;
+      color: var(--text-muted);
+    }
+
+    .modal-body .pdf-fallback span {
+      font-size: 64px;
+    }
+
+    .modal-body .pdf-fallback p {
+      font-size: 0.9rem;
+    }
+
+    /* ─── SCROLLBAR ───────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    /* ─── HAMBURGER BUTTON ────────────────────────── */
+    .ham-btn {
+      display: none;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 40px; height: 40px;
+      align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--text);
+      flex-shrink: 0;
+      transition: background 0.2s;
+      margin-left: auto;
+    }
+    .ham-btn:hover { background: rgba(108,99,255,0.2); }
+
+    /* ─── MOBILE DRAWER ─────────────────────────── */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      backdrop-filter: blur(4px);
+    }
+    .drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+    .drawer {
+      position: fixed;
+      top: 0; left: 0;
+      width: min(300px, 85vw);
+      height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      z-index: 201;
+      padding: 20px 16px;
+      overflow-y: auto;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent) transparent;
+    }
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .drawer-header h2 {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+    .drawer-close {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+
+    /* ─── RESPONSIVE ──────────────────────────────── */
+    @media (max-width: 768px) {
+      aside { display: none; }
+      .ham-btn { display: flex; }
+      .header-stats { display: none; }
+
+      header {
+        padding: 12px 16px;
+        gap: 12px;
+      }
+      .header-icon {
+        width: 40px; height: 40px;
+        font-size: 18px;
+        border-radius: 10px;
+      }
+      header h1 { font-size: 1.2rem; }
+      header p  { display: none; }
+
+      main { padding: 20px 16px; }
+
+      .section { margin-bottom: 36px; }
+      .subsection { margin-bottom: 24px; }
+
+      .section-title { font-size: 1.1rem; }
+      .subsection-title { font-size: 0.9rem; }
+
+      .cards {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+      }
+      .card-thumb { height: 110px; }
+      .card-thumb-icon { font-size: 36px; }
+      .card-body { padding: 10px 12px; }
+      .card-title { font-size: 0.75rem; }
+
+      /* On touch devices show overlay always-visible tap hint */
+      .card-view-overlay {
+        opacity: 0;
+        font-size: 0.78rem;
+      }
+      .card:active .card-view-overlay { opacity: 1; }
+
+      /* Modal: bottom sheet, two-row header */
+      .modal-overlay { padding: 0; align-items: flex-end; }
+      .modal {
+        border-radius: 20px 20px 0 0;
+        max-width: 100%;
+        height: 92vh;
+        transform: translateY(40px);
+      }
+      .modal-overlay.open .modal { transform: translateY(0); }
+
+      /* Row 1: drag pill + icon + title + close */
+      .modal-header {
+        padding: 10px 14px 0;
+        flex-wrap: wrap;
+        row-gap: 0;
+      }
+      /* Drag handle pill */
+      .modal-header::before {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 4px;
+        background: rgba(255,255,255,0.12);
+        border-radius: 2px;
+        margin-bottom: 10px;
+        order: -1;
+      }
+      .modal-icon { font-size: 18px; flex-shrink: 0; order: 0; }
+      .modal-title-block { flex: 1; min-width: 0; order: 0; }
+      .modal-title  { font-size: 0.82rem; }
+      .modal-subtitle { font-size: 0.7rem; }
+      /* Close stays in row 1, after title */
+      .modal-close  { order: 1; width: 38px; height: 38px; font-size: 1rem; }
+
+      /* Row 2: action buttons full-width */
+      .modal-actions {
+        order: 10;
+        width: 100%;
+        margin: 0;
+        padding: 10px 0 12px;
+        border-top: 1px solid var(--border);
+        margin-top: 8px;
+        gap: 8px;
+      }
+      .modal-actions .btn {
+        flex: 1;
+        justify-content: center;
+        padding: 11px 0;
+        font-size: 0.82rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .cards { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .card-thumb { height: 90px; }
+      header h1 { font-size: 1rem; }
+    }
+
+    /* ─── ANIMATIONS ──────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .section { animation: fadeUp 0.5s ease both; }
+    .section:nth-child(2) { animation-delay: 0.1s; }
+    .section:nth-child(3) { animation-delay: 0.2s; }
+  </style>
+</head>
+<body>
+
+<!-- ─── MOBILE DRAWER ──────────────────────────────── -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <h2>Navigation</h2>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <ul class="tree" id="drawer-tree"></ul>
+</div>
+
+<!-- ─── HEADER ─────────────────────────────────── -->
+<header>
+  <div class="header-icon">🏆</div>
+  <div>
+    <h1>My Certificates</h1>
+    <p>A collection of my achievements, courses &amp; recognitions</p>
+  </div>
+  <div class="header-stats">
+    <div class="stat">
+      <div class="stat-value" id="stat-certs">–</div>
+      <div class="stat-label">Certificates</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="stat-cats">–</div>
+      <div class="stat-label">Categories</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="stat-subs">–</div>
+      <div class="stat-label">Courses</div>
+    </div>
+  </div>
+  <button class="ham-btn" id="hamBtn" onclick="openDrawer()" aria-label="Open navigation">☰</button>
+</header>
+
+<div class="layout">
+
+  <!-- ─── SIDEBAR ───────────────────────────────── -->
+  <aside>
+    <h2>Navigation</h2>
+    <ul class="tree" id="sidebar-tree">
+
+      <!-- rendered by JS -->
+    </ul>
+  </aside>
+
+  <!-- ─── MAIN ───────────────────────────────────── -->
+  <main id="main-content">
+
+    <!-- ══ COURSERA ══════════════════════════════════ -->
+    <div class="section" id="sec-coursera">
+      <div class="section-header">
+        <div class="section-icon" style="background:linear-gradient(135deg,#6c63ff22,#6c63ff44);">📚</div>
+        <div>
+          <div class="section-title">Coursera</div>
+          <div class="section-count">5 courses · 13 certificates</div>
+        </div>
+        <div class="section-divider"></div>
+      </div>
+
+      <!-- AI & Disaster Management -->
+      <div class="subsection" id="sub-ai">
+        <div class="subsection-header">
+          <div class="subsection-dot" style="background:#6c63ff;"></div>
+          <span class="subsection-title">AI and Disaster Management</span>
+          <span class="subsection-count">1 certificate</span>
+        </div>
+        <div class="cards">
+          <div class="card" onclick="openModal('Coursera/ai and disaster management/Coursera SEZPTOU5FGJ3.pdf', 'Coursera SEZPTOU5FGJ3', 'AI and Disaster Management')">
+            <div class="card-thumb" style="background:linear-gradient(135deg,#1a1535,#2d1b69);">
+              <div class="card-thumb-bg">🤖</div>
+              <div class="card-thumb-icon">📄</div>
+              <div class="card-view-overlay">👁️ View Certificate</div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Certificate · SEZPTOU5FGJ3</div>
+              <div class="card-meta">
+                <span class="card-tag" style="background:rgba(108,99,255,0.15);color:#a89dff;">Coursera</span>
+                AI &amp; Disaster Mgmt
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Communication for Everyone -->
+      <div class="subsection" id="sub-comm">
+        <div class="subsection-header">
+          <div class="subsection-dot" style="background:#00d4aa;"></div>
+          <span class="subsection-title">Communication for Everyone</span>
+          <span class="subsection-count">4 certificates</span>
+        </div>
+        <div class="cards">
+          <div class="card" onclick="openModal('Coursera/communication-for-everyone/Coursera 1IV644P1J38V.pdf', 'Coursera 1IV644P1J38V', 'Communication for Everyone')">
+            <div class="card-thumb" style="background:linear-gradient(135deg,#0f2a24,#0d4a3a);">
+              <div class="card-thumb-bg">💬</div>
+              <div class="card-thumb-icon">📄</div>
+              <div class="card-view-overlay">👁️ View Certificate</div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Certificate · 1IV644P1J38V</div>
+              <div class="card-meta">
+                <span class="card-tag" style="background:rgba(0,212,170,0.15);color:#00d4aa;">Coursera</span>
+                Communication
+              </div>
+            </div>
+          </div>
+          <div class="card" onclick="openModal('Coursera/communication-for-everyone/Coursera AHNW9F8OE3KR.pdf', 'Coursera AHNW9F8OE3KR', 'Communication for Everyone')">
+            <div class="card-thumb" style="background:linear-gradient(135deg,#0f2a24,#0d4a3a);">
+              <div class="card-thumb-bg">💬</div>
+              <div class="card-thumb-icon">📄</div>
+              <div class="card-view-overlay">👁️ View Certificate</div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Certificate · AHNW9F8OE3KR</div>
+              <div class="card-meta">
+                <span class="card-tag" style="background:rgba(0,212,170,0.15);color:#00d4aa;">Coursera</span>
+                Communication
+              </div>
+            </div>
+          </div>
+          <div class="card" onclick="openModal('Coursera/communication-for-everyone/Coursera O5I36ZX2W78I.pdf', 'Coursera O5I36ZX2W78I', 'Communication for Everyone')">
+            <div class="card-thumb" style="background:linear-gradient(135deg,#0f2a24,#0d4a3a);">
+              <div class="card-thumb-bg">💬</div>
+              <div class="card-thumb-icon">📄</div>
+              <div class="card-view-overlay">👁️ View Certificate</div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Certificate · O5I36ZX2W78I</div>
+              <div class="card-meta">
+                <span class="card-tag" style="background:rgba(0,212,170,0.15);color:#00d4aa;">Coursera</span>
+                Communication
+              </div>
+            </div>
+          </div>
+          <div class="card" onclick="openModal('Coursera/communication-for-everyone/Coursera RCQP66RCW3HP.pdf', 'Coursera RCQP66RCW3HP', 'Communication for Everyone')">
+            <div class="card-thumb" style="background:linear-gradient(135deg,#0f2a24,#0d4a3a);">
+              <div class="card-thumb-bg">💬</div>
+              <div class="card-thumb-icon">📄</div>
+              <div class="card-view-overlay">👁️ View Certificate</div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Certificate · RCQP66RCW3HP</div>
+              <div class="card-meta">
+                <span class="card-tag" style="background:rgba(0,212,170,0.15);color:#00d4aa;">Coursera</span>
+                Communication
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cybersecurity -->
+      <div class="subsection" id="sub-cyber">
+        <div class="subsection-header">
+          <div class="subsection-dot" style="background:#ff6584;"></div>
+          <span class="subsection-title">Cybersecurity</span>
+          <span class="subsection-count">1 certificate</span>
+        </div>
+        <div class="cards">
+          <div class="card" onclick="openModal('Coursera/cyber/Coursera 0O2FJGM31NM9.pdf', 'Coursera 0O2FJGM31NM9', 'Cybersecurity')">
+            <div class="card-thumb" style="background:linear-gradient(135deg,#2a0f1a,#4a0d25);">
+              <div class="card-thumb-bg">🔐</div>
+              <div class="card-thumb-icon">📄</div>
+              <div class="card-view-overlay">👁️ View Certificate</div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Certificate · 0O2FJGM31NM9</div>
+              <div class="card-meta">
+                <span class="card-tag" style="background:rgba(255,101,132,0.15);color:#ff6584;">Coursera</span>
+                Cybersecurity
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Design Thinking -->
+      <div class="subsection" id="sub-design">
+        <div class="subsection-header">
+          <div class="subsection-dot" style="background:#ffd166;"></div>
+          <span class="subsection-title">Design Thinking</span>
+          <span class="subsection-count">4 certificates</span>
+        </div>
+        <div class="cards">
+          <div class="card" onclick="openModal('Coursera/design thinking/Coursera 5ZHSD2W9Q7BJ.pdf', 'Coursera 5ZHSD2W9Q7BJ', 'Design Thinking')">
+            <div class="card-thumb" style="background:linear-gradient(135deg,#2a2210,#4a3c0d);">
+              <div class="card-thumb-bg">🎨</div>
+              <div class="card-thumb-icon">📄</div>
+              <div class="card-view-overlay">👁️ View Certificate</div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Certificate · 5ZHSD2W9Q7BJ</div>
+              <div class="card-meta">
+                <span class="card-tag" style="background:rgba(255,209,102,0.15);color:#ffd166;">Coursera</span>
+                Design Thinking
+              </div>
+            </div>
+          </div>
+          <div class="card" onclick="openModal('Coursera/design thinking/Coursera JMY4M2LETMOE.pdf', 'Coursera JMY4M2LETMOE', 'Design Thinking')">
+            <div class="card-thumb" style="background:linear-gradient(135deg,#2a2210,#4a3c0d);">
+              <div class="card-thumb-bg">🎨</div>
+              <div class="card-thumb-icon">📄</div>
+              <div class="card-view-overlay">👁️ View Certificate</div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Certificate · JMY4M2LETMOE</div>
+              <div class="card-meta">
+                <span class="card-tag" style="background:rgba(255,209,102,0.15);color:#ffd166;">Coursera</span>
+                Design Thinking
+              </div>
+            </div>
+          </div>
+          <div class="card" onclick="openModal('Coursera/design thinking/Coursera QVPXGZZ86SDA.pdf', 'Coursera QVPXGZZ86SDA', 'Design Thinking')">
+            <div class="card-thumb" style="background:linear-gradient(135deg,#2a2210,#4a3c0d);">
+              <div class="card-thumb-bg">🎨</div>
+              <div class="card-thumb-icon">📄</div>
+              <div class="card-view-overlay">👁️ View Certificate</div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Certificate · QVPXGZZ86SDA</div>
+              <div class="card-meta">
+                <span class="card-tag" style="background:rgba(255,209,102,0.15);color:#ffd166;">Coursera</span>
+                Design Thinking
+              </div>
+            </div>
+          </div>
+          <div class="card" onclick="openModal('Coursera/design thinking/Coursera XJL6QL75HJRR.pdf', 'Coursera XJL6QL75HJRR', 'Design Thinking')">
+            <div class="card-thumb" style="background:linear-gradient(135deg,#2a2210,#4a3c0d);">
+              <div class="card-thumb-bg">🎨</div>
+              <div class="card-thumb-icon">📄</div>
+              <div class="card-view-overlay">👁️ View Certificate</div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Certificate · XJL6QL75HJRR</div>
+              <div class="card-meta">
+                <span class="card-tag" style="background:rgba(255,209,102,0.15);color:#ffd166;">Coursera</span>
+                Design Thinking
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Natural Disaster & Climate Change -->
+      <div class="subsection" id="sub-ndcc">
+        <div class="subsection-header">
+          <div class="subsection-dot" style="background:#4fc3f7;"></div>
+          <span class="subsection-title">Natural Disaster &amp; Climate Change Risk Assessment</span>
+          <span class="subsection-count">3 certificates</span>
+        </div>
+        <div class="cards">
+          <div class="card" onclick="openModal('Coursera/Natural Disaster and Climate Change Risk Assessment/Coursera 7H384AJXZL2E.pdf', 'Coursera 7H384AJXZL2E', 'Natural Disaster & Climate Change')">
+            <div class="card-thumb" style="background:linear-gradient(135deg,#0f1e2a,#0d3a4a);">
+              <div class="card-thumb-bg">🌍</div>
+              <div class="card-thumb-icon">📄</div>
+              <div class="card-view-overlay">👁️ View Certificate</div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Certificate · 7H384AJXZL2E</div>
+              <div class="card-meta">
+                <span class="card-tag" style="background:rgba(79,195,247,0.15);color:#4fc3f7;">Coursera</span>
+                Climate &amp; Disaster
+              </div>
+            </div>
+          </div>
+          <div class="card" onclick="openModal('Coursera/Natural Disaster and Climate Change Risk Assessment/Coursera 8BUPZ8O1BZ8C.pdf', 'Coursera 8BUPZ8O1BZ8C', 'Natural Disaster & Climate Change')">
+            <div class="card-thumb" style="background:linear-gradient(135deg,#0f1e2a,#0d3a4a);">
+              <div class="card-thumb-bg">🌍</div>
+              <div class="card-thumb-icon">📄</div>
+              <div class="card-view-overlay">👁️ View Certificate</div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Certificate · 8BUPZ8O1BZ8C</div>
+              <div class="card-meta">
+                <span class="card-tag" style="background:rgba(79,195,247,0.15);color:#4fc3f7;">Coursera</span>
+                Climate &amp; Disaster
+              </div>
+            </div>
+          </div>
+          <div class="card" onclick="openModal('Coursera/Natural Disaster and Climate Change Risk Assessment/Coursera HQ5N81EAZOM2.pdf', 'Coursera HQ5N81EAZOM2', 'Natural Disaster & Climate Change')">
+            <div class="card-thumb" style="background:linear-gradient(135deg,#0f1e2a,#0d3a4a);">
+              <div class="card-thumb-bg">🌍</div>
+              <div class="card-thumb-icon">📄</div>
+              <div class="card-view-overlay">👁️ View Certificate</div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Certificate · HQ5N81EAZOM2</div>
+              <div class="card-meta">
+                <span class="card-tag" style="background:rgba(79,195,247,0.15);color:#4fc3f7;">Coursera</span>
+                Climate &amp; Disaster
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END COURSERA -->
+
+    <!-- ══ HACKATHONS ════════════════════════════════ -->
+    <div class="section" id="sec-hack">
+      <div class="section-header">
+        <div class="section-icon" style="background:linear-gradient(135deg,#ff658422,#ff658444);">⚡</div>
+        <div>
+          <div class="section-title">Hackathons</div>
+          <div class="section-count">1 certificate</div>
+        </div>
+        <div class="section-divider"></div>
+      </div>
+      <div class="cards">
+        <div class="card" onclick="openModal('Hackathons/CultRang IIT GOa.pdf', 'CultRang IIT Goa', 'Hackathons')">
+          <div class="card-thumb" style="background:linear-gradient(135deg,#2a1020,#4a1535);">
+            <div class="card-thumb-bg">⚡</div>
+            <div class="card-thumb-icon">🏅</div>
+            <div class="card-view-overlay">👁️ View Certificate</div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">CultRang — IIT Goa</div>
+            <div class="card-meta">
+              <span class="card-tag" style="background:rgba(255,101,132,0.15);color:#ff6584;">Hackathon</span>
+              IIT Goa
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END HACKATHONS -->
+
+    <!-- ══ SKILLS ════════════════════════════════════ -->
+    <div class="section" id="sec-skills">
+      <div class="section-header">
+        <div class="section-icon" style="background:linear-gradient(135deg,#00d4aa22,#00d4aa44);">🛠️</div>
+        <div>
+          <div class="section-title">Skills</div>
+          <div class="section-count">3 certificates</div>
+        </div>
+        <div class="section-divider"></div>
+      </div>
+      <div class="cards">
+        <div class="card" onclick="openModal('Skils/blockchain-iot.pdf', 'Blockchain &amp; IoT', 'Skills')">
+          <div class="card-thumb" style="background:linear-gradient(135deg,#0d2a1c,#0a4a30);">
+            <div class="card-thumb-bg">🔗</div>
+            <div class="card-thumb-icon">🔗</div>
+            <div class="card-view-overlay">👁️ View Certificate</div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Blockchain &amp; IoT</div>
+            <div class="card-meta">
+              <span class="card-tag" style="background:rgba(0,212,170,0.15);color:#00d4aa;">Skill</span>
+              Blockchain · IoT
+            </div>
+          </div>
+        </div>
+        <div class="card" onclick="openModal('Skils/cisco.pdf', 'Cisco Certification', 'Skills')">
+          <div class="card-thumb" style="background:linear-gradient(135deg,#0d1e2a,#0a304a);">
+            <div class="card-thumb-bg">🌐</div>
+            <div class="card-thumb-icon">🌐</div>
+            <div class="card-view-overlay">👁️ View Certificate</div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Cisco Certification</div>
+            <div class="card-meta">
+              <span class="card-tag" style="background:rgba(79,195,247,0.15);color:#4fc3f7;">Skill</span>
+              Networking · Cisco
+            </div>
+          </div>
+        </div>
+        <div class="card" onclick="openModal('Skils/ieee.pdf', 'IEEE Certificate', 'Skills')">
+          <div class="card-thumb" style="background:linear-gradient(135deg,#1a1020,#2a1540);">
+            <div class="card-thumb-bg">⚙️</div>
+            <div class="card-thumb-icon">⚙️</div>
+            <div class="card-view-overlay">👁️ View Certificate</div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">IEEE Certificate</div>
+            <div class="card-meta">
+              <span class="card-tag" style="background:rgba(108,99,255,0.15);color:#a89dff;">Skill</span>
+              IEEE
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ─── MODAL ───────────────────────────────────────── -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeOnBackdrop(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-icon" id="modalIcon">📄</span>
+      <div class="modal-title-block">
+        <div class="modal-title" id="modalTitle">Certificate</div>
+        <div class="modal-subtitle" id="modalSubtitle">–</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-actions">
+        <a class="btn btn-primary" id="modalDownload" href="#" download target="_blank">⬇️ Download</a>
+        <a class="btn btn-ghost" id="modalOpen" href="#" target="_blank">🔗 Open</a>
+      </div>
+    </div>
+    <div class="modal-body">
+      <iframe id="modalFrame" src="" title="Certificate PDF"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TOAST ──────────────────────────────────────── -->
+<div id="liveToast"
+  style="position:fixed;bottom:28px;right:28px;z-index:9999;
+         background:var(--surface);border:1px solid var(--border);
+         padding:12px 20px;border-radius:14px;font-size:0.84rem;
+         box-shadow:0 8px 32px rgba(0,0,0,0.5);display:flex;
+         align-items:center;gap:10px;transform:translateY(80px);
+         opacity:0;transition:all 0.35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;">
+  <span style="font-size:1.3rem;">🔄</span>
+  <span id="toastMsg">Certificates updated!</span>
+  <span style="width:8px;height:8px;border-radius:50%;
+               background:#00d4aa;box-shadow:0 0 8px #00d4aa;
+               animation:pulse 1.2s infinite;"></span>
+</div>
+<style>
+  #liveToast.show { transform:translateY(0); opacity:1; pointer-events:all; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+</style>
+
+<script>
+  // ─── CATEGORY & SUB CONFIG ─────────────────────────
+  const PALETTE = [
+    {color:'#6c63ff',hexAlpha:'108,99,255', bg:'linear-gradient(135deg,#6c63ff22,#6c63ff44)',thumb:'linear-gradient(135deg,#1a1535,#2d1b69)'},
+    {color:'#00d4aa',hexAlpha:'0,212,170',  bg:'linear-gradient(135deg,#00d4aa22,#00d4aa44)',thumb:'linear-gradient(135deg,#0f2a24,#0d4a3a)'},
+    {color:'#ff6584',hexAlpha:'255,101,132',bg:'linear-gradient(135deg,#ff658422,#ff658444)',thumb:'linear-gradient(135deg,#2a0f1a,#4a0d25)'},
+    {color:'#ffd166',hexAlpha:'255,209,102',bg:'linear-gradient(135deg,#ffd16622,#ffd16644)',thumb:'linear-gradient(135deg,#2a2210,#4a3c0d)'},
+    {color:'#4fc3f7',hexAlpha:'79,195,247', bg:'linear-gradient(135deg,#4fc3f722,#4fc3f744)',thumb:'linear-gradient(135deg,#0f1e2a,#0d3a4a)'},
+    {color:'#f7914f',hexAlpha:'247,145,79', bg:'linear-gradient(135deg,#f7914f22,#f7914f44)',thumb:'linear-gradient(135deg,#2a1a0f,#4a2a0d)'},
+  ];
+
+  const CAT_CFG = {
+    'coursera':   {icon:'📚',pidx:0,label:'Coursera'},
+    'hackathons': {icon:'⚡',pidx:2,label:'Hackathons'},
+    'skils':      {icon:'🛠️',pidx:1,label:'Skills'},
+    'skills':     {icon:'🛠️',pidx:1,label:'Skills'},
+  };
+
+  const SUB_CFG = {
+    'ai and disaster management':                          {icon:'🤖',pidx:0,label:'AI and Disaster Management'},
+    'communication-for-everyone':                          {icon:'💬',pidx:1,label:'Communication for Everyone'},
+    'cyber':                                               {icon:'🔐',pidx:2,label:'Cybersecurity'},
+    'design thinking':                                     {icon:'🎨',pidx:3,label:'Design Thinking'},
+    'natural disaster and climate change risk assessment': {icon:'🌍',pidx:4,label:'Natural Disaster & Climate Change Risk Assessment'},
+  };
+
+  const FILE_ICON_MAP = {
+    'blockchain':'🔗','iot':'🔗','cisco':'🌐','network':'🌐',
+    'ieee':'⚙️','cultr':'🏅','iit':'🏅','hackathon':'🏅',
+  };
+
+  let _catPIdx = 0, _subPIdx = 0;
+
+  function getCatPal(name) {
+    const cfg = CAT_CFG[name.toLowerCase()];
+    if (cfg) return {...PALETTE[cfg.pidx], icon:cfg.icon, label:cfg.label};
+    const p = PALETTE[_catPIdx++ % PALETTE.length];
+    return {...p, icon:'📁', label:name.charAt(0).toUpperCase()+name.slice(1)};
+  }
+
+  function getSubPal(name) {
+    const cfg = SUB_CFG[name.toLowerCase()];
+    if (cfg) return {...PALETTE[cfg.pidx], icon:cfg.icon, label:cfg.label};
+    const p = PALETTE[_subPIdx++ % PALETTE.length];
+    return {...p, icon:'📂', label:name.charAt(0).toUpperCase()+name.slice(1)};
+  }
+
+  function getFileIcon(filename) {
+    const l = filename.toLowerCase();
+    for (const [k,v] of Object.entries(FILE_ICON_MAP)) if (l.includes(k)) return v;
+    return '📄';
+  }
+
+  function slugify(name, prefix='sec') {
+    return prefix+'-'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  }
+
+  function countFiles(nodes) {
+    return nodes.reduce((s,n)=> s + (n.type==='file' ? 1 : countFiles(n.children||[])), 0);
+  }
+
+  function displayName(filename) { return filename.replace(/\.pdf$/i,''); }
+
+  function cardHTML(file, pal, catLabel) {
+    const name = displayName(file.name);
+    const icon = getFileIcon(file.name);
+    const ea = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+    return '<div class="card" '
+      + 'data-path="' + ea(file.path) + '" '
+      + 'data-title="' + ea(name) + '" '
+      + 'data-cat="' + ea(catLabel) + '" '
+      + 'onclick="handleCardClick(this)">'
+      + '<div class="card-thumb" style="background:' + pal.thumb + ';">'
+      +   '<div class="card-thumb-bg">' + pal.icon + '</div>'
+      +   '<div class="card-thumb-icon">' + icon + '</div>'
+      +   '<div class="card-view-overlay">👁️ View Certificate</div>'
+      + '</div>'
+      + '<div class="card-body">'
+      +   '<div class="card-title">' + name + '</div>'
+      +   '<div class="card-meta">'
+      +     '<span class="card-tag" style="background:rgba(' + pal.hexAlpha + ',0.15);color:' + pal.color + ';">' + catLabel + '</span>'
+      +   '</div>'
+      + '</div>'
+      + '</div>';
+  }
+
+  // ─── RENDER SIDEBAR (+ DRAWER) ────────────────────────
+  function buildTreeItems(tree, isDrawer) {
+    _catPIdx = 0;
+    const frag = document.createDocumentFragment();
+    tree.filter(n=>n.type==='dir').forEach(cat => {
+      const pal = getCatPal(cat.name);
+      const secId = slugify(cat.name);
+      const subdirs = cat.children.filter(c=>c.type==='dir');
+      const fileCount = countFiles(cat.children);
+      const li = document.createElement('li');
+      li.className = 'tree-category';
+      const idSuffix = isDrawer ? '-d' : '';
+      if (subdirs.length > 0) {
+        const tId = 'tree-'+secId+idSuffix;
+        const closeExtra = isDrawer ? 'closeDrawer();' : '';
+        li.innerHTML = `
+          <button class="tree-cat-btn open" onclick="toggleTreeBtn(this,'${tId}');scrollToSection('${secId}');${closeExtra}" data-scroll="${secId}">
+            <span>${pal.icon}</span> ${pal.label}
+            <span class="caret">▶</span>
+          </button>
+          <ul class="tree-sub open" id="${tId}">
+            ${subdirs.map(sub=>{
+              const sp = getSubPal(sub.name);
+              const sid = slugify(sub.name,'sub');
+              const sc = countFiles(sub.children);
+              return `<li class="tree-sub-item"><button class="tree-sub-btn" onclick="scrollToSection('${sid}');${closeExtra}">
+                ${sp.icon} ${sp.label} <span class="badge">${sc}</span>
+              </button></li>`;
+            }).join('')}
+          </ul>`;
+      } else {
+        const closeExtra = isDrawer ? 'closeDrawer();' : '';
+        li.innerHTML = `
+          <button class="tree-cat-btn" onclick="scrollToSection('${secId}');${closeExtra}" data-scroll="${secId}">
+            <span>${pal.icon}</span> ${pal.label}
+            <span class="badge" style="margin-left:auto;">${fileCount}</span>
+          </button>`;
+      }
+      frag.appendChild(li);
+    });
+    return frag;
+  }
+
+  function renderSidebar(tree) {
+    const sidebar = document.getElementById('sidebar-tree');
+    const drawer  = document.getElementById('drawer-tree');
+    sidebar.innerHTML = '';
+    drawer.innerHTML  = '';
+    sidebar.appendChild(buildTreeItems(tree, false));
+    drawer.appendChild(buildTreeItems(tree, true));
+  }
+
+  // ─── RENDER MAIN ────────────────────────────────────
+  function renderMain(tree) {
+    _catPIdx = 0;
+    const main = document.getElementById('main-content');
+    main.innerHTML = '';
+    tree.filter(n=>n.type==='dir').forEach(cat => {
+      const pal = getCatPal(cat.name);
+      const secId = slugify(cat.name);
+      const subdirs = cat.children.filter(c=>c.type==='dir');
+      const topFiles = cat.children.filter(c=>c.type==='file');
+      const total = countFiles(cat.children);
+      const section = document.createElement('div');
+      section.className = 'section';
+      section.id = secId;
+      const countStr = subdirs.length>0
+        ? `${subdirs.length} course${subdirs.length!==1?'s':''} &middot; ${total} certificate${total!==1?'s':''}`
+        : `${total} certificate${total!==1?'s':''}`;
+      let body = '';
+      if (topFiles.length) body += `<div class="cards">${topFiles.map(f=>cardHTML(f,pal,pal.label)).join('')}</div>`;
+      _subPIdx = 0;
+      subdirs.forEach(sub => {
+        const sp = getSubPal(sub.name);
+        const sid = slugify(sub.name,'sub');
+        const sfiles = sub.children.filter(c=>c.type==='file');
+        body += `
+          <div class="subsection" id="${sid}">
+            <div class="subsection-header">
+              <div class="subsection-dot" style="background:${sp.color};"></div>
+              <span class="subsection-title">${sp.label}</span>
+              <span class="subsection-count">${sfiles.length} certificate${sfiles.length!==1?'s':''}</span>
+            </div>
+            <div class="cards">${sfiles.map(f=>cardHTML(f,sp,sp.label)).join('')}</div>
+          </div>`;
+      });
+      section.innerHTML = `
+        <div class="section-header">
+          <div class="section-icon" style="background:${pal.bg};">${pal.icon}</div>
+          <div><div class="section-title">${pal.label}</div><div class="section-count">${countStr}</div></div>
+          <div class="section-divider"></div>
+        </div>${body}`;
+      main.appendChild(section);
+    });
+    attachObserver();
+  }
+
+  // ─── UPDATE STATS ──────────────────────────────────
+  function updateStats(tree) {
+    const cats = tree.filter(n=>n.type==='dir');
+    const total = countFiles(tree);
+    let subs = 0;
+    cats.forEach(c=>{ subs += c.children.filter(x=>x.type==='dir').length; });
+    document.getElementById('stat-certs').textContent = total;
+    document.getElementById('stat-cats').textContent = cats.length;
+    document.getElementById('stat-subs').textContent = subs || cats.length;
+  }
+
+  // ─── TREE TOGGLE ───────────────────────────────────
+  function toggleTreeBtn(btn, subId) {
+    const sub = document.getElementById(subId);
+    const isOpen = sub.classList.toggle('open');
+    btn.classList.toggle('open', isOpen);
+  }
+
+  function handleCardClick(card) {
+    openModal(card.dataset.path, card.dataset.title, card.dataset.cat);
+  }
+
+  // ─── SCROLL TO SECTION ─────────────────────────────
+  function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ─── MODAL ─────────────────────────────────────────
+  function openModal(path, title, subtitle) {
+    const overlay = document.getElementById('modalOverlay');
+    const frame   = document.getElementById('modalFrame');
+    const dl      = document.getElementById('modalDownload');
+    const op      = document.getElementById('modalOpen');
+    document.getElementById('modalTitle').textContent    = title;
+    document.getElementById('modalSubtitle').textContent = subtitle;
+    document.getElementById('modalIcon').textContent = getFileIcon(path.split('/').pop());
+    frame.src = encodeURI(path);
+    dl.href   = encodeURI(path);
+    op.href   = encodeURI(path);
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => { document.getElementById('modalFrame').src = ''; }, 300);
+  }
+
+  function closeOnBackdrop(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // ─── INTERSECTION OBSERVER ─────────────────────────
+  let _observer = null;
+  function attachObserver() {
+    if (_observer) _observer.disconnect();
+    _observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const btn = document.querySelector(`[data-scroll="${entry.target.id}"]`);
+        if (btn) btn.classList.toggle('active', entry.isIntersecting);
+      });
+    }, { threshold: 0.1, rootMargin: '-30% 0px -60% 0px' });
+    document.querySelectorAll('.section').forEach(el => _observer.observe(el));
+  }
+
+  // ─── TOAST ─────────────────────────────────────────
+  function showToast(msg) {
+    const t = document.getElementById('liveToast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // ─── LOAD & RENDER ─────────────────────────────────
+  async function loadAndRender() {
+    try {
+      const res = await fetch('/api/tree');
+      if (!res.ok) throw new Error('no server');
+      const { tree } = await res.json();
+      renderSidebar(tree);
+      renderMain(tree);
+      updateStats(tree);
+    } catch (_) {
+      document.getElementById('main-content').innerHTML = `
+        <div style="text-align:center;padding:80px 40px;color:var(--text-muted);">
+          <div style="font-size:60px;margin-bottom:20px;">⚡</div>
+          <h2 style="color:var(--text);margin-bottom:12px;">Start the live server</h2>
+          <p style="max-width:400px;margin:0 auto 20px;">Run this in the certificate folder to enable live updates:</p>
+          <code style="background:var(--surface2);border:1px solid var(--border);padding:12px 20px;border-radius:10px;display:inline-block;color:#00d4aa;">npm install &amp;&amp; npm start</code>
+          <p style="margin-top:16px;font-size:0.8rem;">Then open <strong style="color:var(--text);">http://localhost:3000</strong></p>
+        </div>`;
+    }
+  }
+
+  // ─── WEBSOCKET live reload ──────────────────────────
+  function connectWS() {
+    try {
+      const ws = new WebSocket(`ws://${location.host}`);
+      ws.onmessage = e => {
+        try {
+          if (JSON.parse(e.data).type === 'reload')
+            loadAndRender().then(() => showToast('Certificates updated!'));
+        } catch(_){}
+      };
+      ws.onclose = () => setTimeout(connectWS, 3000);
+    } catch(_){}
+  }
+
+  // ─── DRAWER ───────────────────────────────────────────
+  function openDrawer() {
+    document.getElementById('drawer').classList.add('open');
+    document.getElementById('drawerOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('drawerOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  loadAndRender();
+  if (location.protocol !== 'file:') connectWS();
+</script>
+</body>
+</html>
